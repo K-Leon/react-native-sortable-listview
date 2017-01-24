@@ -180,14 +180,24 @@ var SortableListView = React.createClass({
     }
   },
   componentDidMount: function() {
-    setTimeout(()=>{
+    let shouldUseTimeouts = typeof(this.props.shouldUseTimeouts) != 'undefined' ? this.props.shouldUseTimeouts : true;
+    if(shouldUseTimeouts){
+      setTimeout(()=>{
+        this.scrollResponder = this.refs.list.getScrollResponder();
+        this.refs.wrapper.measure((frameX, frameY, frameWidth, frameHeight, pageX, pageY) => {
+
+          let layout = {frameX, frameY, frameWidth, frameHeight, pageX, pageY};
+          this.wrapperLayout = layout;
+        });
+      }, 1);
+    } else {
       this.scrollResponder = this.refs.list.getScrollResponder();
       this.refs.wrapper.measure((frameX, frameY, frameWidth, frameHeight, pageX, pageY) => {
 
         let layout = {frameX, frameY, frameWidth, frameHeight, pageX, pageY};
         this.wrapperLayout = layout;
       });
-    }, 1);
+    }
 
   },
   scrollValue: 0,
@@ -228,7 +238,7 @@ var SortableListView = React.createClass({
   checkTargetElement() {
     let scrollValue = this.scrollValue;
 
-    let moveY = this.moveY;
+    let moveY = this.moveY + (this.state.active.layout.frameHeight / 2);
     let targetPixel = scrollValue + moveY - this.firstRowY;
 
     let i = 0;
@@ -316,14 +326,20 @@ var SortableListView = React.createClass({
     this.setOrder(props);
   },
   setOrder: function(props) {
-    this.order = props.order || Object.keys(props.data) || [];
+     if (props.data != null) {
+       this.order = props.order || Object.keys(props.data) || [];
+     }
   },
   getScrollResponder: function() {
     return this.scrollResponder;
   },
   render: function() {
-    let dataSource = this.state.ds.cloneWithRows(this.props.data, this.props.order);
-
+    let dataSource
+  	if (this.props.data) {
+       dataSource = this.state.ds.cloneWithRows(this.props.data, this.props.order);
+     } else {
+       dataSource = this.state.ds.cloneWithRows([])
+     }
     return <View ref="wrapper" style={{flex: 1}} onLayout={()=>{}}>
       <ListView
         enableEmptySections={true}
