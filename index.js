@@ -9,9 +9,10 @@ import {
   PanResponder,
   TouchableWithoutFeedback
 } from 'react-native';
+import CreateClass from 'create-react-class'
 
 let HEIGHT = Dimensions.get('window').height;
-var Row = React.createClass({
+var Row = CreateClass({
   _data: {},
   shouldComponentUpdate: function(props) {
     if (props.hovering !== this.props.hovering) return true;
@@ -53,7 +54,7 @@ var Row = React.createClass({
   }
 });
 
-var SortRow = React.createClass({
+var SortRow = CreateClass({
   getInitialState: function() {
     let layout = this.props.list.state.active.layout;
     let wrapperLayout = this.props.list.wrapperLayout;
@@ -81,7 +82,7 @@ var SortRow = React.createClass({
   }
 });
 
-var SortableListView = React.createClass({
+var SortableListView = CreateClass({
   mixins: [TimerMixin],
   getInitialState:function() {
 
